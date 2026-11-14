@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Launch Radar</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <p class="kicker">Pre-token protocols, ranked by implied value</p>
+      <h1>TOKEN LAUNCH RADAR</h1>
+      <p class="sub">Snapshot <span id="asOf">—</span> · Source: DefiLlama protocols feed</p>
+    </div>
+    <div class="headline" id="headline"></div>
+  </div>
+  <p class="method-line">Implied value = TVL × the median market-cap / TVL multiple of protocols that already trade, adjusted for 7-day growth, age, and chain breadth. A DefiLlama record of “no token” is not proof that a token does not exist.</p>
+</header>
+
+<main>
+  <section class="filters" aria-label="Filters">
+    <input id="q" type="search" placeholder="Search name or slug…" aria-label="Search name or slug">
+    <select id="cat" aria-label="Category"><option value="">All categories</option></select>
+    <select id="chain" aria-label="Chain"><option value="">All chains</option></select>
+    <label class="min-tvl">Min TVL $ <input id="minTvl" type="number" min="0" step="1000000" placeholder="0"></label>
+    <label class="watch-toggle"><input id="watchOnly" type="checkbox"> Watchlist only</label>
+    <span class="count" id="count"></span>
+  </section>
+
+  <section id="boardView">
+    <table id="board">
+      <thead>
+        <tr>
+          <th data-sort="rank">Rank</th>
+          <th data-sort="name">Protocol</th>
+          <th data-sort="category">Category</th>
+          <th data-sort="chains">Chains</th>
+          <th data-sort="tvl_usd">TVL</th>
+          <th data-sort="change_7d">7d</th>
+          <th data-sort="age_days">Age</th>
+          <th data-sort="implied_value_usd">Implied value</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="hint">Click a column header to sort. Click a row to open its detail view and farm plan.</p>
+  </section>
+
+  <section id="detailView" hidden>
+    <button id="backBtn" type="button">← Back to board</button>
+    <div id="detail"></div>
+  </section>
+
+  <section class="live" id="liveSection">
+    <h2>Already trading — for reference, not ranked</h2>
+    <p>These protocols already record a token, so they are not launch candidates. They are shown only because their market caps set the median multiple the board is priced from. Top 30 by market cap:</p>
+    <table>
+      <thead><tr><th>Protocol</th><th>TVL</th><th>Market cap</th></tr></thead>
+      <tbody id="liveRows"></tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <h2>Method, in full</h2>
+  <p><strong>Eligibility.</strong> A protocol joins the ranked board only if its snapshot record carries no token (both gecko_id and symbol null), its category is not Bridge, Canonical Bridge, Liquid Staking, Liquid Restaking, Restaked BTC or CEX, its name does not end in a version marker, carries no whole word “wrapped”, “staked” or “staking”, and does not begin with an exchange name (Binance, Coinbase, Bybit, Kraken, Bitget, OKX, Bitfinex, Gemini). That mirrors the house watchlist rule, minus its TVL floor and minus the parent-protocol check, which the snapshot does not carry. The board therefore holds the 40 watchlist protocols plus genuine pre-token protocols below the floor.</p>
+  <p><strong>Implied value.</strong> Take the median market-cap / TVL ratio across protocols that already trade with both figures positive — computed from this snapshot at run time, never hardcoded — and multiply the protocol’s TVL by it. Then apply three factors: growth, 1 + the 7-day TVL change clamped to −40%…+80% (no change reported counts as 1); maturity, 0.7 + 0.3 × (1 − e^(−age in days / 365)), or 0.85 when no listing date is recorded; breadth, 1 + 0.05 per extra chain up to five. Rank by implied value descending; ties break by higher TVL, then slug ascending. Ranks run exactly 1 to N.</p>
+  <p><strong>One honest edge case.</strong> Sentora Curator carries about $2.76B of TVL and ranks near the top, yet it is not on the house watchlist — the house rule uses a parent record the snapshot does not carry. It passes every eligibility check on the fields the snapshot does carry, so it stays on the board, and the rule is stated here rather than hidden.</p>
+  <p><strong>Caveat.</strong> Implied value is this entry’s own claim about what a token would be worth if the protocol traded like the median protocol that already does. It is not a prediction of whether or when any token is issued, and a DefiLlama record of “no token” is not proof that none exists.</p>
+  <p class="foot-meta" id="footMeta"></p>
+</footer>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
